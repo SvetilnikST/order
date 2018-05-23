@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                template="WEB-INF/template/template.xhtml">
+
+    <ui:define name="page_title">
+        Контроль за записями
+    </ui:define>
+
+    <ui:define name="page_body">
+        <p:panel>
+            <h:outputText value="Контроль за записями"/>
+        </p:panel>
+
+        <h:form>
+
+            <p:spacer/>
+            <!--Прототип-->
+            <!--selectionMode="single"-->
+            <p:dataTable
+                    id="filesTable"
+                    widgetVar="FilesTable"
+                    value="#{dtLazyFilesDataModel}"
+                    var="file"
+                    rowKey="#{file.id}"
+                    paginator="true"
+                    paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                    rows="10"
+                    rowsPerPageTemplate="5,10,15"
+                    lazy="true"
+                    tableStyle="width: auto"
+                    emptyMessage="Нет записей">
+
+                <p:column headerText="Видеозаписи" id="myVideo" rendered="#{dtLazyFilesDataModel.type =='video'}">
+                    <ui:repeat value="#{file.myList()}" var="fname">
+                        <p:commandButton value="#{fname}" id="btnShowVideo"
+                                         action="#{dtLazyFilesDataModel.makeUrl(fname)}"
+                                         update="Video"
+                        />
+                    </ui:repeat>
+                </p:column>
+                <p:column headerText="Аудиозаписи" id="my" rendered="#{dtLazyFilesDataModel.type =='audio'}">
+                    <ui:repeat value="#{file.myList()}" var="fname">
+                        <audio controls="" preload="none">
+                            <source src="#{dtLazyFilesDataModel.makeUrlAudio(fname)}" type="audio/mpeg"/>
+                            <a href="#{dtLazyFilesDataModel.makeUrlAudio(fname)}">fname</a>
+                        </audio>
+
+                    </ui:repeat>
+                </p:column>
+
+                <p:column headerText="Связана с нарядом допуска">
+
+                    <h:link value="#{file.getOrderEntity().getNumber()}" outcome="viewOrder"
+                            rendered="#{file.getOrderEntity() !=null}">
+                        <f:param name="idOrder" value="#{file.getOrderEntity().getId()}"
+                                 rendered="#{file.getOrderEntity() !=null}"/>
+                    </h:link>
+                    <h:outputText value=" "/>
+                    <h:outputText value="#{file.getOrderEntity().getName()}"
+                                  rendered="#{file.getOrderEntity() !=null}"/>
+                </p:column>
+
+                <p:column headerText="Ф.И.О. Допускающего">
+                    <h:outputText value="#{file.officer}"/>
+                </p:column>
+
+                <p:column headerText="Дата записи">
+                    <h:outputText value="#{file.dateIssuance}">
+                        <f:convertDateTime pattern="EE dd MMMM HH:mm"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Время создания">
+                    <h:outputText value="#{file.created_at}">
+                        <f:convertDateTime pattern="EE dd MMMM HH:mm"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Комментарий">
+                    <h:outputText value="#{file.comment}"/>
+                </p:column>
+
+                <p:column headerText="Руководство">
+                    <p:commandButton value="Не просмотрено" id="btnRuk1"
+                                     action="#{dtLazyFilesDataModel.togleMarkPermissionDirector(file)}"
+                                     rendered="#{ file.markDirector==null or file.markDirector==false}"
+                                     style="#{dtLazyFilesDataModel.styleYellow}"
+                                     update="filesTable"
+                    />
+                    <p:commandButton value="Просмотрено" id="btnRuk2"
+                                     action="#{dtLazyFilesDataModel.togleMarkPermissionDirector(file)}"
+                                     rendered="#{ file.markDirector==true}"
+                                     style="#{dtLazyFilesDataModel.button1Style}"
+                                     update="filesTable"
+                    />
+                </p:column>
+
+                <p:column headerText="СНОТТБ">
+                    <p:commandButton value="Не просмотрено" id="btnTb1"
+                                     action="#{dtLazyFilesDataModel.togleMarkPermissionEngineer(file)}"
+                                     rendered="#{file.markEngineer==null or file.markEngineer==false}"
+                                     style="#{dtLazyFilesDataModel.styleYellow}"
+                                     update="filesTable"
+                    />
+                    <p:commandButton value="Просмотрено" id="btnTb2"
+                                     action="#{dtLazyFilesDataModel.togleMarkPermissionEngineer(file)}"
+                                     rendered="#{ file.markEngineer==true}"
+                                     style="#{dtLazyFilesDataModel.button1Style}"
+                                     update="filesTable"
+                    />
+                </p:column>
+
+                <p:column headerText="Будет удален">
+                    <p:commandButton value="Запрет удаления" id="btnDel1"
+                                     action="#{dtLazyFilesDataModel.togleMarkPermissionDelete(file)}"
+                                     rendered="#{file.markToDelete==null or file.markToDelete==false}"
+                                     style="#{dtLazyFilesDataModel.button2Style}"
+                                     update="filesTable"
+                    />
+                    <p:commandButton value="Можно удалять" id="btnDel2"
+                                     action="#{dtLazyFilesDataModel.togleMarkPermissionDelete(file)}"
+                                     rendered="#{ file.markToDelete==true}"
+                                     style="#{dtLazyFilesDataModel.button1Style}"
+                                     update="filesTable"
+                    />
+
+                </p:column>
+
+            </p:dataTable>
+
+        </h:form>
+        <p:dialog header="Modal Dialog" widgetVar="Video" modal="true" dynamic="true" id="Video">
+            <h:form>
+                <video width="960" height="540" controls="controls" preload="auto" autoplay="autoplay">
+
+                    <!--<source src="http://localhost:8080/order/test1.xhtml?id=2" type="video/mp4" />-->
+                    <source src="#{dtLazyFilesDataModel.getFilename()}" type="video/mp4"/>
+
+                </video>
+            </h:form>
+        </p:dialog>
+        <p:dialog header="Modal Dialog" widgetVar="Audio" modal="true" dynamic="true" id="Audio">
+            <h:form>
+                <video width="960" height="540" controls="controls" preload="auto" autoplay="autoplay">
+
+                    <!--<source src="http://localhost:8080/order/test1.xhtml?id=2" type="video/mp4" />-->
+                    <source src="#{dtLazyFilesDataModel.getFilename()}" type="video/mp4"/>
+
+                </video>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+    +</ui:composition>
+

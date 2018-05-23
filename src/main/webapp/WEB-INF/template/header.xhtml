@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:form>
+        <p:toolbar>
+            <f:facet name="left">
+                <p:button type="button" value="Контроль за работами" href="/index.xhtml"/>
+
+            </f:facet>
+
+            <f:facet name="right">
+                <c:if test="#{not userBean.authenticated}">
+                    <p:button type="button" value="Наряды допуска" icon="ui-icon-document"
+                                     href="/listOrder.xhtml" />
+                    <p:button type="button" value="Войти" icon="ui-icon-document"
+                                     href="/login.xhtml"/>
+                </c:if>
+                <c:if test="#{userBean.authenticated}">
+                    <p:button type="button" value="Наряды допуска" icon="ui-icon-document"
+                              href="/listOrder.xhtml" />
+                    <p:button type="button" value="Новый наряд допуска" icon="ui-icon-document"
+                              href="/editOrder.xhtml"
+                              rendered="#{userBean.doRightVerify('createOrder')}"
+                    />
+                    <p:menuButton value="Контроль за файлами">
+                        <p:menuitem value="за аудиофайлами" icon="ui-icon-disk"
+                                    url="/listFiles.xhtml?type=audio"
+                        />
+                        <p:menuitem value="за видеофайлами" icon="ui-icon-arrowrefresh-1-w"
+                                    url="/listFiles.xhtml?type=video"
+                        />
+                    </p:menuButton>
+                    <p:menuButton value="Загрузить" rendered="#{userBean.doRightVerify('createFile')}">
+                        <p:menuitem value="Аудио" icon="ui-icon-audio" url="/editFiles.xhtml?type=audio"/>
+                        <p:menuitem value="Видео" icon="ui-icon-video" url="/editFiles.xhtml?type=video"/>
+                    </p:menuButton>
+                    <p:menuButton value="Администрирование" rendered="#{userBean.doRightVerify('admin')}">
+                        <p:menuitem value="Пользователи" icon="ui-icon-disk"
+                                    url="/administration.xhtml"
+                        />
+                        <p:menuitem value="Файлы" icon="ui-icon-arrowrefresh-1-w"
+                                    url="/listFiles.xhtml?type=video"
+                        />
+                    </p:menuButton>
+                    <p:commandButton value="Выход(#{userBean.login})" icon="ui-icon-document"
+                                     action="#{userBean.doLogout()}"/>
+                </c:if>
+            </f:facet>
+
+        </p:toolbar>
+    </h:form>
+
+
+</ui:composition>
+

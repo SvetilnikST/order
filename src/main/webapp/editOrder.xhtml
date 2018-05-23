@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:f="http://java.sun.com/jsf/core"
+                template="WEB-INF/template/template.xhtml"
+>
+
+    <ui:define name="page_title">
+        Наряд допуск
+    </ui:define>
+
+    <ui:define name="page_body">
+        <h:form>
+            <p:panel>
+                <p:messages id="messages" showDetail="true" closable="true">
+                    <p:autoUpdate/>
+                </p:messages>
+
+
+                <p:outputLabel rendered="#{orderBean.id==0 or orderBean.id==null}">
+                    Новый наряд допуска
+                </p:outputLabel>
+                <p:outputLabel rendered="#{orderBean.id!=0 and orderBean.id!=null}"
+                               value="Изменение наряда допуска № #{orderBean.number} "/>
+
+                <p:panelGrid styleClass="ui-panelgrid-blank" id="grid">
+                    <p:row>
+                        <p:column colspan="1">
+                            <h:outputText value="№ Наряда"/>
+                        </p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="Ответственный руководитель"/>
+                        </p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="Работы завершены"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="1">
+                            <p:inputText id="number" value="#{orderBean.number}"
+                                         title="№ наряда"/>
+                        </p:column>
+                        <p:column colspan="1">
+                            <p:inputText id="officer" value="#{orderBean.officer}"
+                                         title="Ответственный руководитель"/>
+                        </p:column>
+                        <p:column colspan="1">
+                            <p:calendar id="completeness" value="#{orderBean.completeness}"
+                                        pattern="dd.MM.yyyy HH:mm" locale="ru"
+                                        title="Работы завершены" stepMinute="5"
+                                        validator="#{orderBean.validateDateOrder}"/>
+                            <p:commandButton value="Очистить" update="completeness" process="@this" icon="ui-icon-close"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="3">
+                            <h:outputText value="Наименование работ"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="3">
+                            <p:inputTextarea rows="10" cols="100" queryDelay="1800" minQueryLength="4" id="name"
+                                             value="#{orderBean.name}"
+                                             title="Наименование работ" autoResize="false"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="1">
+                            <h:outputText value="Дата выдачи наряда"/>
+                        </p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="Начало работ"/>
+                        </p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="Окончание работ"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="1">
+                            <p:calendar id="dateIssuance" value="#{orderBean.dateIssuance}"
+                                        pattern="dd.MM.yyyy HH:mm" lang="ru" locale="ru"
+                                        title="Дата выдачи наряда" stepMinute="5"
+                                        validator="#{orderBean.validateDateOrder}"/>
+                        </p:column>
+                        <p:column colspan="1">
+                            <p:calendar id="startWork" value="#{orderBean.startWork}"
+                                        pattern="dd.MM.yyyy HH:mm" lang="ru" locale="ru"
+                                        title="Дата начала работ" stepMinute="5"/>
+                        </p:column>
+                        <p:column colspan="1">
+                            <p:calendar id="finishWork" value="#{orderBean.finishWork}"
+                                        pattern="dd.MM.yyyy HH:mm" lang="ru" locale="ru"
+                                        title="Дата окончания работ" stepMinute="5"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:commandButton value="Сохранить" action="#{orderBean.save()}"
+                                 rendered="#{userBean.doRightVerify('changeOrder')}"
+                                 update="grid"
+                />
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+

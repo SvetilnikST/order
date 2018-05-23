@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="WEB-INF/template/template.xhtml">
+    <ui:define name="page_title">
+        Вход в систему
+    </ui:define>
+
+    <ui:define name="page_body">
+        <br/>
+        <h:form id="page_body">
+            <p:panelGrid columns="3" >
+                <p:panelGrid columns="1">
+                    <p:commandButton value="Сегодня" id="ajax1" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                    <p:commandButton value="Вчера" id="ajax2" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                    <p:commandButton value="Последние 7 дней" id="ajax3" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                    <p:commandButton value="Последние 30 дней" id="ajax4" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                    <p:commandButton value="Этот месяц" id="ajax5" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                    <p:commandButton value="Прошлый месяц" id="ajax6" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                    <p:commandButton value="Свой диапазон" id="ajax7" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                    <p:panelGrid columns="2" id="DaTEFROM">
+                        <h:outputText value="ОТ:"/>
+                        <h:outputText value="ДО:"/>
+                        <h:inputText  value="#{dtLazyOrderDataModel.dateFrom1}" >
+                            <f:convertDateTime pattern="dd.MM.yyyy"/>
+                        </h:inputText>
+                        <h:inputText value="#{dtLazyOrderDataModel.dateLast1}">
+                            <f:convertDateTime pattern="dd.MM.yyyy"/>
+                        </h:inputText>
+                        <p:commandButton value="Применить" id="btnOk" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                        <p:commandButton value="Отменить" id="btnCancel" update="page_body" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+                    </p:panelGrid>
+                </p:panelGrid>
+                <p:panel>
+                    <p:calendar id="dateFrom" value="#{dtLazyOrderDataModel.dateFrom1}" mode="inline">
+                        <p:ajax event="dateSelect" listener="#{dtLazyOrderDataModel.onDateSelect}" update="DaTEFROM"/>
+                    </p:calendar>
+
+                    <p:selectOneMenu id="hourFrom" value="#{dtLazyOrderDataModel.hourFrom}" >
+                        <f:selectItems value="#{dtLazyOrderDataModel.hours}"/>
+                        <!--<p:ajax update="orderTable" process="idDepartment" event="change" />-->
+                    </p:selectOneMenu>
+                    <p:selectOneMenu id="minuteFrom" value="#{dtLazyOrderDataModel.minuteFrom}" >
+                        <f:selectItems value="#{dtLazyOrderDataModel.minutes}"/>
+                        <!--<p:ajax update="orderTable" process="idDepartment" event="change" />-->
+                    </p:selectOneMenu>
+                </p:panel>
+                <p:panel>
+                    <p:calendar id="dateLast" value="#{dtLazyOrderDataModel.dateLast1}" mode="inline" />
+
+                    <p:selectOneMenu id="hourLast" value="#{dtLazyOrderDataModel.hourLast}" >
+                        <f:selectItems value="#{dtLazyOrderDataModel.hours}"/>
+                        <!--<p:ajax update="orderTable" process="idDepartment" event="change" />-->
+                    </p:selectOneMenu>
+                    <p:selectOneMenu id="minuteLast" value="#{dtLazyOrderDataModel.minuteLast}" >
+                        <f:selectItems value="#{dtLazyOrderDataModel.minutes}"/>
+                        <!--<p:ajax update="orderTable" process="idDepartment" event="change" />-->
+                    </p:selectOneMenu>
+                </p:panel>
+            </p:panelGrid>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+

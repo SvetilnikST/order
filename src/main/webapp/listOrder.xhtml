@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                template="WEB-INF/template/template.xhtml">
+    <ui:define name="page_title">
+        Наряды допуски
+    </ui:define>
+
+    <ui:define name="page_body">
+        <p:panel>
+            <h:outputText value="Наряды допуски"/>
+        </p:panel>
+
+        <h:form>
+
+            <p:spacer/>
+            <!--Прототип-->
+            <!--selectionMode="single"-->
+            <p:dataTable
+                    id="orderTable"
+                    widgetVar="OrderTable"
+                    var="order"
+                    value="#{dtLazyOrderDataModel}"
+                    rowKey="#{order.id}"
+                    paginator="true"
+                    paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                    rows="10"
+                    rowsPerPageTemplate="5,10,15"
+                    selection="#{dtLazyOrderDataModel.selectedOrder}"
+                    lazy="true"
+                    tableStyle="width: auto"
+                    emptyMessage="Нет записей">
+
+                <f:facet name="header">
+                    <p:panelGrid columns="5">
+                        <p:commandButton value="Работы ведутся" id="btn1" update="orderTable"
+                                         actionListener="#{dtLazyOrderDataModel.buttonAction1}"
+                                         style="#{dtLazyOrderDataModel.button1Style}"
+                        />
+                        <p:commandButton value="Работы не ведутся" id="btn2" update="orderTable"
+                                         actionListener="#{dtLazyOrderDataModel.buttonAction1}"
+                                         style="#{dtLazyOrderDataModel.button2Style}"
+                        />
+                        <p:commandButton value="Работы завершены" id="btn3" update="orderTable"
+                                         actionListener="#{dtLazyOrderDataModel.buttonAction1}"
+                                         style="#{dtLazyOrderDataModel.button3Style}"
+                        />
+                        <!--<p:calendar id="datetime" value="#{dtLazyOrderDataModel.dateFrom}" pattern="dd.MM.yyyy HH:mm" />-->
+
+                        <p:selectOneMenu id="idDepartment" value="#{dtLazyOrderDataModel.selectedDepartment}">
+                            <f:selectItems value="#{dtLazyOrderDataModel.departmentList}" var="department"
+                                           itemLabel="#{department.department}" itemValue="#{department.idDepartment}"/>
+                            <p:ajax update="orderTable" process="idDepartment" event="change"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </f:facet>
+
+
+                <p:column headerText="Служба">
+                    <h:outputText value="#{order.getDepartmentEntity().getDepartment()}"/>
+                </p:column>
+                <p:column headerText="Состояние" sortBy="#{order.status}">
+                    <p:commandButton value="Работы завершены" id="ajax" rendered="#{ order.completeness != null}"
+                                     style="#{dtLazyOrderDataModel.button3Style}"/>
+                    <p:commandButton value="Работы ведутся" id="ajax1"
+                                     action="#{dtLazyOrderDataModel.togleDuring(order)}"
+                                     style="#{dtLazyOrderDataModel.button1Style}"
+                                     rendered="#{ order.completeness == null and order.status==100}"
+                                     update="orderTable"
+                    />
+                    <p:commandButton value="Работы не ведутся" id="ajax2" update="orderTable"
+                                     action="#{dtLazyOrderDataModel.togleDuring(order)}"
+                                     style="#{dtLazyOrderDataModel.button2Style}"
+                                     rendered="#{ order.completeness == null and order.status==10}"/>
+                </p:column>
+                <p:column headerText="№" sortBy="#{order.number}">
+                    <h:link value="#{order.number}" outcome="viewOrder">
+                        <f:param name="idOrder" value="#{order.id}" />
+                    </h:link>
+                </p:column>
+                <p:column headerText="Выдан" sortBy="#{order.dateIssuance}">
+                    <h:outputText value="#{order.dateIssuance}">
+                        <f:convertDateTime pattern="dd MMMM HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Начало" sortBy="#{order.startWork}">
+                    <h:outputText value="#{order.startWork}">
+                        <f:convertDateTime pattern="dd MMMM HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Окончание" sortBy="#{order.finishWork}">
+                    <h:outputText value="#{order.finishWork}">
+                        <f:convertDateTime pattern="dd MMMM HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Ответственный" sortBy="#{order.officer}">
+                    <h:outputText value="#{order.officer}"/>
+                </p:column>
+                <p:column headerText="Наименование работ">
+                    <h:outputText value="#{order.name}"/>
+                </p:column>
+                <p:column headerText="директор">
+                    <p:commandButton value="Не рассмотрено" id="btnDir1"
+                                     action="#{dtLazyOrderDataModel.togleMarkPermissionDirector(order)}"
+                                     rendered="#{ order.markDirector==null or order.markDirector==0}"
+                                     style="#{dtLazyOrderDataModel.styleYellow}"
+                                     update="orderTable"
+                    />
+                    <p:commandButton value="Согласовано" id="btnDir2"
+                                     action="#{dtLazyOrderDataModel.togleMarkPermissionDirector(order)}"
+                                     rendered="#{ order.markDirector==10}"
+                                     style="#{dtLazyOrderDataModel.button1Style}"
+                                     update="orderTable"
+                    />
+                    <p:commandButton value="Отказано" id="btnDir3"
+                                     update="orderTable"
+                                     action="#{dtLazyOrderDataModel.togleMarkPermissionDirector(order)}"
+                                     rendered="#{ order.markDirector==20}"
+                                     style="#{dtLazyOrderDataModel.button2Style}"
+                    />
+                </p:column>
+                <p:column headerText="гл.инженер">
+                    <p:commandButton value="Не рассмотрено" id="btnEng1"
+                                     action="#{dtLazyOrderDataModel.togleMarkPermissionEngineer(order)}"
+                                     rendered="#{ order.markEngineer==null or order.markEngineer==0}"
+                                     style="#{dtLazyOrderDataModel.styleYellow}"
+                                     update="orderTable"
+                    />
+                    <p:commandButton value="Согласовано" id="btnEng2"
+                                     action="#{dtLazyOrderDataModel.togleMarkPermissionEngineer(order)}"
+                                     rendered="#{ order.markEngineer==10}"
+                                     style="#{dtLazyOrderDataModel.button1Style}"
+                                     update="orderTable"
+                    />
+                    <p:commandButton value="Отказано" id="btnEng3"
+                                     update="orderTable"
+                                     action="#{dtLazyOrderDataModel.togleMarkPermissionEngineer(order)}"
+                                     style="#{dtLazyOrderDataModel.button2Style}"
+                                     rendered="#{ order.markEngineer==20}"
+                    />
+                </p:column>
+
+
+            </p:dataTable>
+
+        </h:form>
+    </ui:define>
+
+    +</ui:composition>
+

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:f="http://java.sun.com/jsf/core"
+                template="WEB-INF/template/template.xhtml"
+>
+
+    <ui:define name="page_title">
+        Наряд допуск
+    </ui:define>
+
+    <ui:define name="page_body">
+        <h:form>
+            <p:panel>
+
+                <p:outputLabel value="Наряд допуск #{orderBean.number}"/>
+                 <br/>
+
+                <p:button outcome="editOrder" value="Изменить" icon="ui-icon-edit"
+                          rendered="#{userBean.doRightVerify('changeOrder')}"
+                >
+                    <f:param name="idOrder" value="#{orderBean.id}"/>
+                </p:button>
+                <p:spacer/>
+
+                <p:panelGrid>
+                    <p:row>
+                        <p:column colspan="1">Цех:</p:column>
+                        <p:column colspan="1"><h:outputText
+                                value="#{orderBean.departmentEntity.department}"/></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Наименование работ:</p:column>
+                        <p:column colspan="1"><h:outputText value="#{orderBean.name}"/></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Ответственный руководитель:</p:column>
+                        <p:column colspan="1"><h:outputText value="#{orderBean.officer}"/></p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Дата выдачи наряда:</p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="#{orderBean.dateIssuance}">
+                                <f:convertDateTime pattern="dd MMMM YYYY г., HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Начало работ:</p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="#{orderBean.startWork}">
+                                <f:convertDateTime pattern="dd MMMM YYYY г., HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Окончание работ:</p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="#{orderBean.finishWork}">
+                                <f:convertDateTime pattern="dd MMMM YYYY г., HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column> Состояние: </p:column>
+                        <p:column colspan="1">
+                            <p:commandButton value="Работы завершены" id="ajax"
+                                             rendered="#{ orderBean.completeness != null}"
+                                             style="#{dtLazyOrderDataModel.button3Style}"/>
+                            <p:commandButton value="Работы ведутся" id="ajax1"
+                                             rendered="#{ orderBean.completeness == null and orderBean.status==100}"
+                                             style="#{dtLazyOrderDataModel.button1Style}"
+                            />
+                            <p:commandButton value="Работы не ведутся" id="ajax2"
+                                             rendered="#{orderBean.completeness == null and orderBean.status==10}"
+                                             style="#{dtLazyOrderDataModel.button2Style}"
+                            />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Работы завершены:</p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="#{orderBean.completeness}" rendered="#{orderBean.completeness !=null}">
+                                <f:convertDateTime pattern="dd MMMM YYYY г., HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Отметка о согласовании Директор:</p:column>
+                        <p:column colspan="1">
+                            <p:commandButton value="Не рассмотрено" id="btnDir1"
+                                             rendered="#{orderBean.markDirector==null or orderBean.markDirector==0}"
+                                             style="#{dtLazyOrderDataModel.styleYellow}"
+                            />
+                            <p:commandButton value="Согласовано" id="btnDir2"
+                                             rendered="#{orderBean.markDirector==10}"
+                                             style="#{dtLazyOrderDataModel.button1Style}"
+                            />
+                            <p:commandButton value="Отказано" id="btnDir3"
+                                             rendered="#{orderBean.markDirector==20}"
+                                             style="#{dtLazyOrderDataModel.button2Style}"
+                            />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1" headerText="гл.инженер">Отметка о согласовании Гл. инженер:</p:column>
+                        <p:column colspan="1">
+                            <p:commandButton value="Не рассмотрено" id="btnEng1"
+                                             rendered="#{orderBean.markEngineer==null or orderBean.markEngineer==0}"
+                                             style="#{dtLazyOrderDataModel.styleYellow}"
+                            />
+                            <p:commandButton value="Согласовано" id="btnEng2"
+                                             rendered="#{orderBean.markEngineer==10}"
+                                             style="#{dtLazyOrderDataModel.button1Style}"
+                            />
+                            <p:commandButton value="Отказано" id="btnEng3"
+                                             rendered="#{orderBean.markEngineer==20}"
+                                             style="#{dtLazyOrderDataModel.button2Style}"
+                            />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Создано:</p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="#{orderBean.created_at}">
+                                <f:convertDateTime pattern="dd MMMM YYYY г., HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="1">Изменено:</p:column>
+                        <p:column colspan="1">
+                            <h:outputText value="#{orderBean.updated_at}">
+                                <f:convertDateTime pattern="dd MMMM YYYY г., HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
